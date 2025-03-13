@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stakeholder Timeline Visualization (2026-2076)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Marked.js for parsing Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.22.5/babel.min.js"></script>
+    <style>
+        /* Custom styles */
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #d3d3d3;
+            outline: none;
+            border-radius: 4px;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased p-4">
+    <div id="root" class="mx-auto max-w-6xl"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Define the time points
+        const timePoints = [2026, 2036, 2046, 2056, 2066, 2076];
+
+        // Define the roles and their descriptions
+        const roles = [
+            {
+                id: 'researcher',
+                name: 'Researcher',
+                description: 'Analyzes data and provides objective insights',
+                color: 'bg-blue-100 border-blue-300'
+            },
+            {
+                id: 'envNGO',
+                name: 'Environmental NGO',
+                description: 'Advocates for nature conservation',
+                color: 'bg-green-100 border-green-300'
+            },
+            {
+                id: 'landUser',
+                name: 'Land User/Meat Industry',
+                description: 'Lobbies for meat industry development',
+                color: 'bg-red-100 border-red-300'
+            },
+            {
+                id: 'agriInstitution',
+                name: 'Agricultural Institution',
+                description: 'Provides policy guidance for agriculture',
+                color: 'bg-amber-100 border-amber-300'
+            },
+            {
+                id: 'enviInstitution',
+                name: 'Environmental Institution',
+                description: 'Provides policy guidance for environmental protection',
+                color: 'bg-emerald-100 border-emerald-300'
+            },
+            {
+                id: 'lawConsultant',
+                name: 'Law Consultant',
+                description: 'Provides legal framework context',
+                color: 'bg-purple-100 border-purple-300'
+            },
+             {
+                id: 'high_level',
+                name: 'High-level Institution',
+                description: 'Provides final policy decisions',
+                color: 'bg-gray-100 border-gray-300'
+            },
+            {
+                id: 'hlevenInstitution',
+                name: 'High-Level Institution',
+                description: 'Makes final budget allocation decisions',
+                color: 'bg-gray-100 border-gray-300'
+            }
+        ];
+
+        // Data structure for each role's output at each time point
+        const roleOutputs = {
+            researcher: {
+                2026: "The data has no missing values. The meat demand and supply have been increasing over time, but there is a gap between the demand and supply. The policy goal of meat production has remained constant over time. The protected area ratio has been increasing over time, but there is a discrepancy between the policy goal and the actual outcome. The budget allocations for meat production and protected areas have remained constant over time. There is a positive correlation between meat demand and supply, and a negative correlation between protected area ratio and policy goal of protected area ratio. There is no clear correlation between the budget allocations and the outcomes.\n\nNote:  The above insights are based on the analysis of the provided data and may not be generalizable to other contexts.",
+                2036: "From the initial data inspection, we can observe the following:\n\nThe meat demand and supply have been increasing over time, but there is a gap between the demand and supply.\nThe protected area ratio has been increasing over time, but it's still below the policy goal.\nThe budget allocations for meat production and protected areas have been consistent over time, but it's not clear if they are aligned with the goals and outcomes.\nThere are correlations between meat demand, meat supply, and protected area ratio, but it's not clear what the causative factors are.\nWe can continue to explore the data further to gain more insights, but these are the initial observations from the data analysis.",
+                2046: "The data has no missing values.\nThe meat demand and supply have been increasing over time, but there is a gap between the two.\nThe policy goal for meat production is higher than the actual meat supply.\nThe protected area ratio has been increasing over time, but there is a discrepancy between the policy goal and actual outcome.\nThe budget allocation for meat production and protected areas has been consistent over time, but it's not clear if the budget is aligned with the goals and outcomes.\nThere are correlations between meat demand, meat supply, and protected area ratio, but it's not clear what the causative factors are.\n\nNote: The final answer is a summary of the key insights from the data analysis. It's not a single answer, but rather a collection of observations and insights from the data.",
+                2056: "The data has no missing values.\nThe descriptive statistics  and histograms provide an overview of the numerical features.\nThe time-series graphs for meat demand, meat supply, and policy goals for meat production show an increasing trend over time.\nThe time-series graphs for protected area ratio and policy goals for protected area ratio show a slight increase over time.\nThe line plots for budget allocations for meat production and protected areas over time show a consistent allocation.\nThe correlation matrix reveals strong correlations between meat demand, meat supply, and policy goals for meat production, as well as between protected area ratio and policy goals for protected area ratio.\n\nThese insights can inform policy decisions related to meat production and protected areas.",
+                2066: "Agent stopped due to iteration limit or time limit.",
+                2076: "The meat demand and supply have been increasing over time, but there is a gap between the demand and supply.\nThe policy goal of meat production is higher than the actual meat supply.\nThe protected area ratio has been increasing over time, but there is a discrepancy between the policy goal and the actual ratio.\nThe budget allocation for meat production and protected areas has been consistent over time, but there is a negative correlation between the meat budget and the protected area ratio.\nThere are strong correlations between the meat demand, supply, and policy goal, as well as between the protected area ratio and policy goal.\nThere are negative correlations between the meat budget and the protected area ratio, and between the protected area budget and the meat demand.\n\nThese insights can inform policy decisions related to meat production and protected areas."
+            },
+            envNGO: {
+                  2026: "Here are some bullet points to lobby the high-level public policy institution to prioritize nature conservation:\n\n*Urgent Need for Nature Conservation*\nThe increasing gap between meat demand and supply highlights the unsustainable nature of our current food system, which is driving deforestation, habitat destruction, and biodiversity loss. We must prioritize nature conservation to ensure a sustainable future.\n\n*Protected Areas: A Key Solution*\nThe positive trend in protected area ratio is encouraging, but the discrepancy between policy goals and actual outcomes is concerning. We urge the institution to increase budget allocations for protected areas to bridge this gap and ensure effective conservation.\n\n* Meat Production: A Threat to Nature*\nThe constant policy goal of meat production, despite the increasing demand and supply, is unsustainable and detrimental to the environment. We recommend a shift towards sustainable agriculture practices and reduced meat consumption to mitigate the environmental impact.\n\n*Budget Allocations: A Missed Opportunity*\nThe constant budget allocations for meat production and protected areas are insufficient to address the scale of the environmental crisis. We urge the institution to increase budget allocations for nature conservation and sustainable agriculture practices.\n\nCorrelation between Meat Demand and Protected Areas\nThe positive correlation between meat demand and supply, and the negative correlation between protected area ratio and policy goal, highlight the need for a holistic approach to address the environmental impact of meat production. We recommend integrating nature conservation into agricultural policies to ensure a sustainable food system.\n\n*A Call to Action*\nWe urge the institution to prioritize nature conservation and sustainable agriculture practices to address the environmental crisis. This requires increased budget allocations, policy reforms, and a commitment to protecting our natural resources for future generations.",
+                2036: "Here are some bullet points to lobby the high-level public policy institution to prioritize nature conservation:\n\n**Urgent Need for Nature Conservation**\nThe increasing gap between meat demand and supply highlights the pressure on natural resources, emphasizing the need for sustainable land-use planning and conservation of natural habitats to maintain ecosystem services.\n\n**Protected Areas: A Critical Step Towards Conservation**\nWhile the protected area ratio is increasing, it still falls short of the policy goal, underscoring the need for accelerated efforts to establish and maintain protected areas, which are essential for preserving biodiversity and mitigating climate change.\n\n**Align Budget Allocations with Conservation Goals**\nThe consistent budget allocations for meat production and protected areas are encouraging, but it is crucial to ensure that these allocations are aligned with the policy goals and outcomes, prioritizing nature conservation and sustainable land use.\n\n**Unraveling the Correlations: A Call to Action**\nThe correlations between meat demand, meat supply, and protected area ratio warrant further investigation to understand the underlying causes and consequences. This knowledge will inform evidence-based policy decisions that balance human needs with environmental sustainability.\n\n**Prioritizing Nature Conservation: A Climate Imperative**\nThe climate crisis demands immediate attention, and nature conservation is a critical component of the solution. By prioritizing nature conservation, we can mitigate climate change, protect biodiversity, and ensure a sustainable future for all.\n\n**Recommendations**\nIncrease the protected area ratio to meet the policy goal, focusing on high-biodiversity areas and ecosystem restoration.\nImplement sustainable land-use planning and practices in agriculture, forestry, and other sectors to reduce the environmental impact of meat production and other human activities.\nEnsure budget allocations are aligned with conservation goals and outcomes, prioritizing nature conservation and sustainable development.\nSupport further research to understand the correlations between meat demand, meat supply, and protected area ratio, informing evidence-based policy decisions.\n\nBy prioritizing nature conservation, we can ensure a sustainable future for all, mitigate climate change, and protect the natural world that underpins human well-being.",
+                2046: "As a representative of an environmental NGO, I would like to bring the following key points to the attention of the high-level public policy institution to prioritize nature conservation:\n\n**Urgent Need for Sustainable Meat Production**\nThe gap between meat demand and supply highlights the need for sustainable meat production practices to reduce the environmental impact of the meat industry.\nThe policy goal for meat production exceeds the actual supply, indicating a need for more efficient and environmentally-friendly production methods.\n\n**Protected Areas Require Enhanced Support**\nWhile the protected area ratio has been increasing, there is a discrepancy between the policy goal and actual outcome, suggesting that more resources and support are needed to achieve the desired conservation outcomes.\nThe consistent budget allocation for protected areas is encouraging, but it is essential to ensure that the budget is aligned with the goals and outcomes to maximize impact.\n\n**Interconnectedness of Meat Production and Conservation**\nThe correlations between meat demand, meat supply, and protected area ratio suggest that these factors are interconnected and that addressing one issue can have a ripple effect on the others.\nIt is crucial to consider the environmental implications of meat production and the role of protected areas in mitigating its impact on biodiversity and ecosystem health.\n\n**Call to Action**\nWe urge the institution to prioritize nature conservation by increasing support for sustainable meat production practices, enhancing resources for protected areas, and ensuring that budget allocations are aligned with policy goals and outcomes.\nWe recommend a comprehensive approach that considers the interconnectedness of meat production, conservation, and environmental protection to ensure a sustainable future for all.",
+                2056: "Here are some bullet points to lobby the high-level public policy institution to prioritize nature conservation:\n\n**Urgent Need for Nature Conservation**\nThe slight increase in protected area ratio over time is encouraging, but it is not enough to combat the alarming rate of biodiversity loss and ecosystem degradation.\nThe consistent allocation of budget for protected areas is appreciated, but it is crucial to increase the allocation to effectively manage and expand protected areas.\n\n**Meat Production and its Environmental Impact**\nThe increasing trend of meat demand and supply is a concern, as it contributes to deforestation, habitat destruction, and greenhouse gas emissions, exacerbating climate change.\nThe strong correlation between meat demand, meat supply, and policy goals for meat production highlights the need for sustainable agriculture practices and reduced meat consumption to mitigate environmental degradation.\n\n**Prioritizing Nature Conservation**\nIncrease budget allocation for protected areas to expand and effectively manage them, ensuring the conservation of biodiversity and ecosystem services.\nImplement policies to promote sustainable agriculture practices, reduce meat consumption, and encourage eco-friendly alternatives to mitigate the environmental impact of meat production.\nStrengthen policy goals for protected area ratio to ensure a significant increase in protected areas, safeguarding natural habitats and ecosystems.\nEncourage sustainable land-use planning, considering the environmental impact of meat production and promoting eco-friendly practices in agriculture.\n\n**Collaborative Approach**\nFoster collaboration between government agencies, NGOs, and local communities to develop and implement effective conservation strategies.\nSupport research and development of innovative solutions to reduce the environmental footprint of meat production and promote sustainable agriculture practices.\n\n**Time for Action**\nThe time-series graphs and correlation matrix provide valuable insights, but it is essential to act swiftly to address the environmental concerns associated with meat production and protected areas.\nWe urge the institution to prioritize nature conservation and take immediate action to mitigate the devastating impact of human activities on the environment.",
+                2066: "I apologize, but it seems like there is no information provided. However, as a representative of an environmental NGO, I can still provide some general bullet points to lobby a high-level public policy institution to prioritize nature conservation:\n\n**Urgent Need for Nature Conservation**\nThe natural world is facing unprecedented threats, including climate change, deforestation, habitat destruction, and species extinction, which can have devastating consequences for human well-being and the planet.\n\n**Economic Benefits of Nature Conservation**\nNature conservation can generate significant economic benefits, including job creation, sustainable livelihoods, and eco-tourism opportunities.\nInvesting in nature conservation can also prevent costly natural disasters, such as floods and landslides, and reduce the economic impacts of climate change.\n\n**Climate Change Mitigation and Adaptation**\nNature-based solutions, such as reforestation and wetland restoration, can play a critical role in mitigating climate change by sequestering carbon dioxide and reducing greenhouse gas emissions.\nConserving natural habitats can also help communities adapt to the impacts of climate change, such as sea-level rise and extreme weather events.\n\n**Biodiversity and Ecosystem Services**\nNature conservation is essential for maintaining biodiversity, which is critical for human health, food security, and water quality.\nEcosystem services, such as pollination, pest control, and nutrient cycling, are essential for sustainable agriculture and human well-being.\n\n**Human Health and Well-being**\nNature conservation can have numerous physical and mental health benefits, including reduced stress, improved air and water quality, and increased opportunities for outdoor recreation and physical activity.\n\n**International Cooperation and Commitments**\nThe global community has recognized the importance of nature conservation through international agreements, such as the Convention on Biological Diversity and the Sustainable Development Goals.\nIt is essential for governments to prioritize nature conservation to meet their international commitments and ensure a sustainable future for all.\n\nI hope these bullet points are helpful in making the case for prioritizing nature conservation.",
+                2076: "Here are some bullet points to lobby the high-level public policy institution to prioritize nature conservation:\n\n**Urgent Need for Balance between Meat Production and Nature Conservation**\nThe increasing demand and supply of meat, coupled with the gap between demand and supply, highlights the need for sustainable meat production practices that do not compromise nature conservation efforts.\nThe discrepancy between the policy goal and actual protected area ratio underscores the importance of prioritizing nature conservation to maintain ecological balance and mitigate climate change.\n\n**Reallocate Budget to Support Nature Conservation**\nThe consistent budget allocation for meat production and protected areas masks a concerning trend: the negative correlation between the meat budget and protected area ratio suggests that increased investment in meat production comes at the expense of nature conservation.\nWe urge the institution to rebalance the budget to prioritize protected areas and nature conservation, recognizing the long-term benefits of preserving biodiversity and ecosystem services.\n\n**Align Policy Goals with Environmental Sustainability**\nThe strong correlations between meat demand, supply, and policy goal, as well as between the protected area ratio and policy goal, indicate that policy decisions can have far-reaching environmental implications.\nWe recommend that policy goals be revised to prioritize environmental sustainability, ensuring that meat production and protected areas are managed in harmony with nature conservation objectives.\n\n**Protecting Nature is Crucial for Climate Change Mitigation**\nThe negative correlation between the protected area budget and meat demand highlights the need to prioritize nature conservation in the face of increasing meat demand.\nBy protecting natural habitats and ecosystems, we can mitigate the impacts of climate change, maintain biodiversity, and ensure a sustainable future for all.\n\n**Collaborative Approach to Sustainable Development**\nWe propose a collaborative approach between the meat production industry, conservation organizations, and policymakers to develop sustainable practices that balance meat production with nature conservation goals.\nBy working together, we can ensure that environmental sustainability is integrated into policy decisions, benefiting both people and the planet."
+            },
+            landUser: {
+                2026: "Here are some bullet points to lobby the high-level public policy institution to prioritize meat industry development:\n\n*Economic Growth and Job Creation*\nThe increasing demand and supply of meat over time indicates a growing industry that can contribute significantly to the national economy and create jobs in rural areas.\n\n*Food Security*\nThe gap between meat demand and supply highlights the need to prioritize meat production to ensure food security and self-sufficiency, reducing reliance on imports and enhancing national food sovereignty.\n\n*Sustainable Development*\nWhile the protected area ratio has been increasing, there is a discrepancy between the policy goal and actual outcome, indicating a need for more effective conservation efforts. The meat industry can play a crucial role in sustainable development by promoting eco-friendly practices and responsible land use.\n\n*Investment in Infrastructure and Research*\nThe constant budget allocations for meat production and protected areas over time suggest a need for increased investment in infrastructure, research, and development to improve efficiency, productivity, and sustainability in the meat industry.\n\n*Alignment with Policy Goals*\nThe constant policy goal of meat production over time indicates a commitment to supporting the industry. To achieve this goal, the policy institution should prioritize meat industry development to ensure alignment with national objectives.\n\n*Addressing Discrepancies*\nThe negative correlation between protected area ratio and policy goal of protected area ratio highlights the need for more effective conservation efforts. The meat industry can work with policymakers to address these discrepancies and promote sustainable practices.\n\n*Encouraging Private Sector Investment*\nThe lack of correlation between budget allocations and outcomes suggests that private sector investment can play a crucial role in driving growth and development in the meat industry. Policies that encourage private sector investment can help bridge the gap between demand and supply.\nBy prioritizing meat industry development, the policy institution can support economic growth, food security, sustainable development, and job creation, while addressing discrepancies in conservation efforts and encouraging private sector investment.",
+                2036: "Here are some bullet points to lobby the high-level public policy institution to prioritize meat industry development:\n\n**Economic Growth and Job Creation**\nThe increasing demand for meat presents an opportunity for the industry to grow and create new jobs, contributing to the overall economic development of the country.\nBy prioritizing meat industry development, the government can stimulate economic growth, increase employment opportunities, and improve the standard of living for citizens.\n\n**Food Security**\nThe gap between meat demand and supply highlights the need for increased investment in the meat industry to ensure a stable food supply for the population.\nBy supporting the meat industry, the government can help ensure that citizens have access to a reliable source of protein, improving food security and public health.\n\n**Environmental Sustainability**\nWhile the protected area ratio is increasing, it is still below the policy goal, indicating a need for further investment in sustainable meat production practices.\nBy prioritizing meat industry development, the government can incentivize sustainable practices, reduce the environmental impact of meat production, and promote eco-friendly farming methods.\n\n**Alignment of Budget Allocations**\nThe consistent budget allocations for meat production and protected areas suggest a commitment to supporting the industry, but it is essential to ensure that these allocations are aligned with the goals and outcomes of the industry.\nBy prioritizing meat industry development, the government can optimize budget allocations to achieve the desired outcomes, such as increasing meat supply, improving food security, and promoting sustainable practices.\n\n**Research and Development**\nThe correlations between meat demand, meat supply, and protected area ratio highlight the need for further research to understand the causative factors and optimize the industry's performance.\nBy prioritizing meat industry development, the government can invest in research and development, driving innovation and improving the efficiency and sustainability of the industry.\n\n**Competitiveness and Trade**\nA strong meat industry can enhance the country's competitiveness in the global market, increasing exports and generating foreign exchange earnings.\nBy prioritizing meat industry development, the government can support the growth of the industry, promoting trade and economic cooperation with other countries.\n\nBy prioritizing meat industry development, the government can address the gap between demand and supply, promote sustainable practices, and drive economic growth, while ensuring food security and improving public health.",
+                2046: "Here are some bullet points to lobby the high-level public policy institution to prioritize meat industry development:\n\n Meat Industry Development: A Key Priority for Food Security and Economic Growth \nAs a representative of the meat production industry, I urge the institution to prioritize meat industry development to address the growing demand for meat and bridge the gap between supply and demand. Here are key insights from the data analysis:\n\n**Growing Demand for Meat**:\n Meat demand has been increasing over time, indicating a strong market for our products. By supporting the meat industry, we can ensure a stable food supply and meet the needs of a growing population.\n\n**Supply Gap**:\n Despite increasing meat supply, there is still a gap between supply and demand. Investing in the meat industry can help bridge this gap, reducing reliance on imports and supporting domestic food security.\n\n**Policy Alignment**:\n The policy goal for meat production is higher than the actual supply, indicating a need for targeted support to achieve these goals. We urge the institution to allocate resources to support the industry in achieving these policy objectives.\n\n**Protected Areas**:\n The increasing protected area ratio is a positive trend, but there is still a discrepancy between policy goals and actual outcomes. By supporting sustainable meat production practices, we can ensure that protected areas are maintained while still meeting meat demand.\n\n**Budget Alignment**:\n While budget allocation for meat production and protected areas has been consistent, it is essential to review and adjust the budget to ensure it is aligned with policy goals and outcomes. We recommend a thorough review of budget allocation to ensure effective use of resources.\n\n**Correlations and Causative Factors**: While correlations exist between meat demand, meat supply, and protected area ratio, further research is needed to understand the causative factors. We propose funding for research initiatives to better understand these relationships and inform evidence-based policy decisions.\n\nBy prioritizing meat industry development, we can ensure a stable food supply, support economic growth, and promote sustainable practices. We urge the institution to recognize the importance of the meat industry and provide targeted support to achieve these goals.",
+                2056: "Here are some bullet points to lobby the high-level public policy institution to prioritize meat industry development:\n\n**Economic Growth and Job Creation**\nThe increasing trend in meat demand and supply over time indicates a growing industry that can contribute significantly to the national economy and create jobs.\n\n**Industry Development and Investment**\nThe strong correlations between meat demand, meat supply, and policy goals for meat production suggest that investing in the meat industry can lead to increased production, meeting growing demand and achieving policy goals.\nConsistent budget allocations for meat production over time demonstrate a commitment to the industry's growth and development.\n\n**Food Security and Sustainability**\nThe meat industry plays a critical role in ensuring food security, and prioritizing its development can help meet the increasing demand for protein-rich food.\nThe slight increase in protected area ratio over time indicates a growing focus on sustainability, which the meat industry can support through responsible and environmentally-friendly practices.\n\n**Government Support and Policy Alignment**\nThe correlation between protected area ratio and policy goals for protected area ratio suggests that government policies are aligned with the industry's goals, and continued support can lead to further growth and development.\nBy prioritizing meat industry development, the government can demonstrate its commitment to supporting a critical sector that contributes to the national economy and food security.\n\n**Competitiveness and Global Trade**\nA thriving meat industry can enhance the country's competitiveness in global markets, increasing exports and attracting foreign investment.\nBy prioritizing the meat industry, the government can help the sector become more competitive, creating opportunities for trade and economic growth.\n\n**Rural Development and Community Engagement**\nThe meat industry is often located in rural areas, and prioritizing its development can lead to rural development, community engagement, and improved livelihoods for rural communities.\n\nBy highlighting these points, I believe the high-level public policy institution will understand the importance of prioritizing meat industry development, leading to economic growth, job creation, and food security, while supporting sustainable and responsible practices.",
+                2066: "I apologize, but it seems like there is no information provided. However, as a representative of the meat production industry, I can still provide some general bullet points to lobby the high-level public policy institution to prioritize meat industry development:\n\n**Economic Benefits:**\nThe meat industry is a significant contributor to the national economy, generating billions of dollars in revenue and providing employment opportunities for millions of people.\nInvesting in the meat industry can lead to increased economic growth, improved livelihoods, and reduced poverty rates.\n\n**Food Security:**\nThe meat industry plays a critical role in ensuring global food security by providing a reliable source of protein to millions of people.\nA thriving meat industry can help reduce hunger and malnutrition, particularly in developing countries.\n\n**Rural Development:**\nThe meat industry is often a vital part of rural economies, providing income opportunities for farmers and rural communities.\nSupporting the meat industry can help promote rural development, reduce urban migration, and preserve rural ways of life.\n\n**Innovation and Technology:**\nThe meat industry is a significant driver of innovation, with advances in animal breeding, nutrition, and processing technology.\nInvesting in the meat industry can lead to the development of new technologies, improved efficiency, and enhanced product quality.\n\n**Sustainability:**\nThe meat industry is committed to reducing its environmental footprint, with many producers adopting sustainable practices and reducing greenhouse gas emissions.\nSupporting the meat industry can help promote sustainable agriculture, reduce waste, and protect natural resources.\n\n**Food Safety and Quality:**\nThe meat industry is committed to providing safe and high-quality products to consumers, with strict regulations and quality control measures in place.\nInvesting in the meat industry can help improve food safety, reduce the risk of foodborne illnesses, and enhance consumer confidence.\n\n**Trade and Exports:**\nThe meat industry is a significant contributor to national trade, with many countries relying on meat exports as a vital source of foreign exchange earnings.\nSupporting the meat industry can help promote international trade, increase exports, and improve the national balance of payments.\n\nI hope these points are helpful in making the case for prioritizing meat industry development.",
+                2076: "Here are some bullet points to lobby the high-level public policy institution to prioritize meat industry development:\n\n Meat Industry Development: A Key Priority for Food Security and Economic Growth \nAs a representative of the meat production industry, I urge the institution to prioritize meat industry development to address the growing demand for meat and bridge the gap between demand and supply. Here are key reasons:\n\n **Food Security**: The increasing demand for meat highlights the need for a robust meat production industry to ensure a stable food supply for the population. By prioritizing meat industry development, we can ensure that the growing demand is met, reducing the risk of food insecurity.\n\n* **Economic Growth**: The meat industry is a significant contributor to the national economy. Investing in meat industry development will create jobs, stimulate economic growth, and increase revenue for the government.\n\n**Policy Alignment**: The policy goal of meat production is higher than the actual meat supply, indicating a need for increased investment in the industry to meet policy objectives. By prioritizing meat industry development, we can align policy goals with actual production levels.\n\n**Sustainable Development**: While there is a negative correlation between the meat budget and the protected area ratio, investing in sustainable meat production practices can help reduce the environmental impact of the industry. This can be achieved through initiatives such as sustainable livestock farming, reducing waste, and promoting eco-friendly practices.\n\n**Optimizing Budget Allocation**: The consistent budget allocation for meat production and protected areas indicates a need for a more strategic approach to budget allocation. By prioritizing meat industry development, we can optimize budget allocation to maximize returns on investment and achieve policy goals.\n\n**Addressing Discrepancies**: The discrepancy between the policy goal and actual protected area ratio highlights the need for a more integrated approach to meat production and conservation. By prioritizing meat industry development, we can address these discrepancies and promote sustainable development.\n\n In conclusion, prioritizing meat industry development is crucial for food security, economic growth, and sustainable development. I urge the institution to recognize the importance of the meat industry and allocate necessary resources to support its growth and development."
+            },
+            agriInstitution: {
+                2026: "The policy goal of meat production has remained constant over the years, but the actual production has been fluctuating, indicating a need for more effective policies to achieve the goal.\nThe budget surplus has been decreasing over the years, indicating a need for more efficient allocation of resources.\nThere is a gap between the policy goal and actual meat production, indicating a need for more targeted initiatives to bridge the gap.\nThe correlation between the budget surplus and time indicates a need for more sustainable financial planning to ensure a stable surplus.\nThe weak negative correlation between the actual meat production and time indicates a need for more effective strategies to increase production.\n\nBased on these findings, I propose the following recommendations to the high-level institution:\nIncrease the budget allocation for meat production to bridge the gap between the policy goal and actual production.\nImplement more targeted initiatives to increase actual meat production, such as providing incentives for farmers and investing in research and development.\nDevelop more sustainable financial planning strategies to ensure a stable budget surplus.\nConduct regular monitoring and evaluation of the meat production sector to ensure that the policies are effective and make adjustments as needed.\n\nThese recommendations aim to address the challenges facing the meat production sector, increase food security, and improve the livelihood of farmers, while also ensuring a stable financial situation.",
+                2036: "Increase budget allocation to support the meat production sector.\nSet realistic policy goals that align with the current production capacity.\nImplement initiatives to improve the productivity and efficiency of the sector to meet the growing demand for meat.",
+                2046: "As a policy-maker specializing in agriculture, I propose the following set of compelling and concise bullet points to the high-level institution, seeking increased priorities and financial support for meat production:\nThe policy goal of meat production has remained constant over the years, while the actual meat production has been fluctuating, indicating a need for more effective policy implementation and resource allocation.\nThe budget surplus has been in deficit most of the time, with a mean deficit of approximately $378,619, indicating a need for increased financial support to meet the policy goals.\nThere is a strong positive correlation between the policy goal of meat production and the actual meat production, indicating that the policy goal is a good predictor of the actual production.\nThere is a strong negative correlation between the budget surplus and the actual meat production, indicating that an increase in production is associated with a decrease in budget surplus, highlighting the need for more efficient resource allocation.\nTo address the challenges facing the meat production sector, I recommend increasing the budget allocation to support initiatives that improve production efficiency, enhance market competitiveness, and promote sustainable agriculture practices.\nI also recommend establishing a monitoring and evaluation framework to track progress towards the policy goals and adjust resource allocation accordingly.\n\nThese bullet points provide a concise and compelling argument for increased priorities and financial support for meat production, taking into account the economic impact and social implications of the sector.",
+                2056: "The policy goal of meat production has remained constant over time, indicating a need for a review of the policy goal to ensure it is aligned with the current market demands and production capabilities.\nThere is a significant gap between the policy goal and actual meat production, indicating a need for increased investment in the sector to bridge the gap.\nThe budget surplus has been mostly in deficit, indicating a need for increased allocation of funds to the sector to support the production and reduce the deficit.\nThe strong positive correlation between the policy goal and actual production indicates that increasing the policy goal can lead to an increase in actual production, but this may also lead to a decrease in the budget surplus.\nTherefore, I propose that the high-level institution increases the priority and financial support for the meat production sector, with a review of the policy goal to ensure it is aligned with the current market demands and production capabilities. This will help to bridge the gap between the policy goal and actual production, and reduce the budget deficit.",
+                2066: "The current policy goals for meat production are not aligned with the budget allocation, leading to a deficit. To address this, we propose setting realistic policy goals that align with the budget allocation.\nThe strong positive correlation between the policy goal of meat production and actual meat production suggests that increasing the policy goal can lead to increased production. However, this must be balanced with the budget allocation to avoid a deficit.\nWe recommend increasing the budget allocation for meat production to support the policy goals and ensure a surplus.\nThe negative correlation between the budget surplus and the other variables suggests that the current budget allocation is not sufficient to support the policy goals. We propose a review of the budget allocation to ensure it is aligned with the policy goals.\nTo ensure food security, farmer livelihood, and financial well-being, we recommend a holistic approach that considers the economic impact and social implications of the policy goals and budget allocation.",
+                2076: "The policy goal of meat production has remained constant over time, while the actual production has been fluctuating around the policy goal, indicating a need for more effective policies to achieve the target production.\nThere is a significant gap between the policy goal and actual production, indicating a need for increased investment in the meat production sector.\nThe budget surplus has been mostly negative, indicating a deficit in the budget, which needs to be addressed through increased allocation of funds to the meat production sector.\nThe strong positive correlation between the policy goal and actual production suggests that increasing the policy goal can lead to increased actual production, but this needs to be balanced with the budget constraints.\nTherefore, I propose that the high-level institution increases the priority and financial support for the meat production sector, with a focus on achieving the policy goal of meat production, while also addressing the budget deficit through increased allocation of funds."
+            },
+            enviInstitution: {
+                2026: "The current protected area ratio is only approximately 0.019, far from the policy goal of 0.11, highlighting the need for increased priorities and financial support.\nThe mean budget surplus is approximately 12400, which is a relatively small amount considering the importance of protected areas.\nThe maximum budget surplus is approximately 34000, which is still a relatively small amount considering the importance of protected areas.\nThere have been years with budget deficits, with a minimum budget surplus of approximately -6000, emphasizing the need for increased financial support.\nTo achieve the policy goal of 0.11, we propose a significant increase in budget allocation for protected area establishment and expansion.\nWe recommend setting a reasonable policy goal of increasing the protected area ratio by at least 0.01 annually, with a corresponding increase in budget allocation to support this goal.\nWe urge the high-level institution to prioritize protected area establishment and expansion, recognizing the critical role it plays in nature conservation, biodiversity, and pollution reduction, and ultimately, achieving the Net-zero targets in our region.",
+                2036: "As a policy-maker, I propose the following to the high-level institution:\nIncrease the policy goal of protected area ratio to at least 15% by 2025 and 20% by 2030.\nAllocate a minimum of 50% of the average budget surplus (20,200) specifically for protected area establishment.\nDevelop a comprehensive plan to bridge the gap between the policy goal and the current state of protected areas, including strategies for habitat restoration, species conservation, and community engagement.\nBy taking these steps, we can effectively expand protected areas, reduce biodiversity loss, and achieve the Net-zero targets in our region.",
+                2046: "To the high-level institution, I propose the following:\nIncrease the policy goal of protected area ratio to 0.15 to align with the Net-zero targets and to address the biodiversity loss.\nAllocate a minimum of 20% of the budget surplus towards protected areas to support the expansion of protected areas and to achieve the policy goal.\nDevelop a comprehensive plan to address the gap between the policy goal and the actual protected area ratio, including increasing funding, improving governance, and enhancing community engagement.\n\nBy taking these steps, we can effectively address the challenges facing the expansion of protected areas and make significant progress towards achieving the Net-zero targets.",
+                2056: "Based on the analysis, I propose the following bullet points to the high-level institution:\n\nThe policy goals for protected area ratios have been increasing over time, indicating a commitment to environmental protection.\nThe actual protected area ratios have been closely following the policy goals, suggesting that the initiatives are effective.\nHowever, the current budget surplus of approximately 6.36 million is not sufficient to meet the increasing policy goals, and a significant increase in budget allocation is necessary to support the expansion of protected areas.\nTo achieve the Net-zero targets, it is essential to prioritize protected area establishment and allocate a reasonable budget to support this initiative.\nI recommend setting a policy goal of increasing the protected area ratio by at least 10% annually, with a corresponding increase in budget allocation to support this goal.\nI propose allocating at least 20% of the total budget surplus towards protected area establishment and expansion, which would be approximately 1.27 million.\nI urge the high-level institution to prioritize environmental protection and allocate sufficient resources to support the expansion of protected areas, which is critical to achieving the Net-zero targets and preserving biodiversity.",
+                2066: "Here are the proposed bullet points:\n\nThe current policy goal of protected area ratio is 0.158409, but the actual protected area ratio is only 0.115363, indicating a significant gap between the policy goal and the current state.\nThe budget surplus has been increasing over time, with a mean budget surplus of 250,880. However, this surplus is not being effectively utilized to achieve the policy goals.\nThere is a strong positive correlation between Time and Policy goal of protected area ratio, as well as between Time and Actual protected area ratio, indicating that the policy goals and actual protected areas are increasing over time.\nTo bridge the gap between the policy goal and the current state, we propose a significant increase in budget allocation for protected area establishment, with a focus on achieving the policy goal of protected area ratio.\nWe recommend setting a reasonable policy goal of protected area ratio, taking into account the current state and the increasing trend over time.\nWe urge the high-level institution to prioritize protected area establishment and allocate sufficient budget to support this critical initiative, which is essential for nature conservation, biodiversity, and pollution reduction.",
+                2076: "Here are the bullet points:\n\nThe current policy goal of protected area ratio is 17.39%, which is far from the desired Net-zero targets, emphasizing the need for increased priorities and financial support.\nThe actual protected area ratio is only 13.44%, indicating a significant gap between the policy goal and the current state, highlighting the need for more effective allocation of resources.\nThe budget surplus has been inconsistent over the years, with a total surplus of 27.02 million, which could be utilized more effectively to support protected area establishment.\nThere is a strong correlation between the policy goal of protected area ratio and the actual protected area ratio (0.96), indicating that increasing the policy goal could lead to an increase in the actual protected area ratio.\nThe budget surplus is moderately correlated with the actual protected area ratio (0.81), suggesting that allocating a larger budget surplus to protected area establishment could lead to an increase in the actual protected area ratio.\n\nThese points collectively argue for increased priorities and financial support for protected area establishment, and a more effective allocation of resources to achieve the desired Net-zero targets."
+            },
+            lawConsultant: {
+                2026: "Based on the provided context, the relevant and important information to inform the high-level institution's policy-making on allocating budget between meat production and protected areas is:\n\n1. *Biodiversity and ecosystem restoration targets*:\nThe EU Nature Restoration Law proposes to restore at least 20% of the Union's land and sea areas by 2030, and all ecosystems in need of restoration by 2050. This implies that a significant portion of the budget should be allocated to protected areas to achieve these targets.\n\n2. *Agricultural production and environmental impact*:\nThe Action Plan on Organic Farming aims to have at least 25% of the EU's agricultural land under organic farming by 2030. This could lead to a reduction in the environmental impact of meat production. The budget allocation should consider the environmental benefits of organic farming and the potential reduction in pollution and greenhouse gas emissions.\n\n3. *Climate change mitigation*:\nThe Climate Law sets a target of reducing net greenhouse gas emissions by at least 55% by 2030. The budget allocation should prioritize measures that support climate change mitigation, such as sustainable land use, reforestation, and ecosystem restoration.\n\n4. *Pesticide use reduction*:\nThe proposed Directive on the Sustainable Use of Pesticides aims to reduce pesticide use by 50% by 2030. This could impact meat production and the allocation of budget to protected areas.\n\n5. *Forest strategy and tree planting*:\nThe Forest Strategy aims to plant 3 billion trees by 2030. This could have implications for land use, biodiversity, and ecosystem restoration, and should be considered in the budget allocation.\n\n6. *Water Framework Directive*:\nThe Water Framework Directive aims to improve water quality and reduce pollution. The budget allocation should consider the impact of meat production on water resources and the need to protect water ecosystems.\n\nBy considering these factors, the high-level institution can make informed decisions about allocating budget between meat production and protected areas, balancing the need to support sustainable agriculture with the need to protect and restore ecosystems.",
+                2036: "Based on the provided context, the relevant and important information to inform the high-level institution's policy-making on allocating budget between meat production and protected areas is:\n\n1. **Biodiversity and ecosystem restoration targets**:\nThe EU Nature Restoration Law proposes to restore at least 20% of the Union's land and sea areas by 2030, and all ecosystems in need of restoration by 2050. This implies that a significant portion of the budget should be allocated to protected areas to achieve these targets.\n\n2. **Agricultural production and environmental impact**:\n The Action Plan on Organic Farming aims to have at least 25% of the EU's agricultural land under organic farming by 2030. This could lead to a reduction in the environmental impact of meat production. However, the Zero Pollution Action Plan for Air, Water and Soil targets a 50% reduction in nutrient losses and a 25% reduction in the use of chemical pesticides by 2030. This implies that some budget should be allocated to support sustainable meat production practices that minimize environmental harm.\n\n3. **Climate change mitigation**:\n The Climate Law sets a target of reducing net greenhouse gas emissions by at least 55% by 2030. Both meat production and protected areas can contribute to achieving this target. For example, sustainable land-use practices in protected areas can help sequester carbon, while sustainable meat production practices can reduce emissions.\n\n4. **Land-use planning and management**:\n The EU Nature Restoration Law and the Forest Strategy propose to plant 3 billion trees by 2030. This implies that some budget should be allocated to support sustainable land-use planning and management practices that balance meat production with ecosystem restoration and biodiversity conservation.\n\nIn conclusion, the high-level institution should consider allocating budget to both meat production and protected areas, with a focus on sustainable practices that minimize environmental harm, promote ecosystem restoration, and contribute to climate change mitigation.",
+                2046: "Based on the provided context, the relevant and important information to inform the high-level institution's policy-making on allocating budget between meat production and protected areas is:\n\n1. **Biodiversity and ecosystem restoration targets**:\n The EU Nature Restoration Law proposes to restore at least 20% of the Union's land and sea areas by 2030, and all ecosystems in need of restoration by 2050. This implies that a significant portion of the budget should be allocated to protected areas to achieve these targets.\n\n2. **Agricultural production and environmental impact**:\n The Action Plan on Organic Farming aims to have at least 25% of the EU's agricultural land under organic farming by 2030. This could lead to a reduction in the environmental impact of meat production. The budget allocation should consider the environmental benefits of organic farming and the potential reduction in pollution and greenhouse gas emissions.\n\n3. **Climate change mitigation**:\n The Climate Law sets a target of reducing net greenhouse gas emissions by at least 55% by 2030. The budget allocation should prioritize measures that support climate change mitigation, such as sustainable land use, reforestation, and ecosystem restoration.\n\n4. **Pesticide use reduction**:\n The proposed Directive on the Sustainable Use of Pesticides aims to reduce pesticide use by 50% by 2030. This could impact meat production and the allocation of budget to protected areas.\n\n5. **Forest strategy and tree planting**:\n The Forest Strategy aims to plant 3 billion trees by 2030. This could have implications for land use, biodiversity, and ecosystem restoration, and should be considered in the budget allocation.\n\n6. **Water Framework Directive**:\n The Water Framework Directive aims to improve water quality and reduce pollution. The budget allocation should consider the impact of meat production on water resources and the need to protect water ecosystems.\n\nBy considering these factors, the high-level institution can make informed decisions about allocating budget between meat production and protected areas, balancing the need to support sustainable agriculture with the need to protect and restore ecosystems.",
+                2056: "Based on the provided context, the relevant and important information to inform the high-level institution's policy-making on allocating budget between meat production and protected areas is:\n\n1. **Biodiversity and ecosystem restoration targets**: The EU Nature Restoration Law proposes to restore at least 20% of the Union's land and sea areas by 2030, and all ecosystems in need of restoration by 2050. This implies that a significant portion of the budget should be allocated to protected areas to achieve these targets.\n\n2. **Agricultural production and environmental impact**: The Action Plan on Organic Farming aims to have at least 25% of the EU's agricultural land under organic farming by 2030. This could lead to a reduction in the environmental impact of meat production. The budget allocation should consider the environmental benefits of organic farming and the potential reduction in pollution and greenhouse gas emissions.\n\n3. **Climate change mitigation**: The Climate Law sets a target of reducing net greenhouse gas emissions by at least 55% by 2030. The budget allocation should prioritize measures that support climate change mitigation, such as sustainable land use, reforestation, and ecosystem restoration.\n\n4. **Pesticide use reduction**: The proposed Directive on the Sustainable Use of Pesticides aims to reduce pesticide use by 50% by 2030. This could impact meat production and the allocation of budget to protected areas.\n\n5. **Forest strategy and tree planting**: The Forest Strategy aims to plant 3 billion trees by 2030. This could have implications for land use, biodiversity, and ecosystem restoration, and should be considered in the budget allocation.\n\n6. **Water Framework Directive**: The Water Framework Directive aims to improve water quality and reduce pollution. The budget allocation should consider the impact of meat production on water resources and the need to protect water ecosystems.\n\nBy considering these factors, the high-level institution can make informed decisions about allocating budget between meat production and protected areas, balancing the need to support sustainable agriculture with the need to protect and restore ecosystems.",
+                2066: "Based on the provided context, the relevant and important information to inform the high-level institution's policy-making on allocating budget between meat production and protected areas is:\n\n1. **Biodiversity and ecosystem restoration targets**: The EU Nature Restoration Law proposes to restore at least 20% of the Union's land and sea areas by 2030, and all ecosystems in need of restoration by 2050. This implies that a significant portion of the budget should be allocated to protected areas to achieve these targets.\n\n2. **Agricultural production and environmental impact**: The Action Plan on Organic Farming aims to have at least 25% of the EU's agricultural land under organic farming by 2030. This could lead to a reduction in the environmental impact of meat production. The budget allocation should consider the environmental benefits of organic farming and the potential reduction in pollution and greenhouse gas emissions.\n\n3. **Climate change mitigation**: The Climate Law sets a target of reducing net greenhouse gas emissions by at least 55% by 2030. The budget allocation should prioritize measures that support climate change mitigation, such as sustainable land use, reforestation, and ecosystem restoration.\n\n4. **Pesticide use reduction**: The proposed Directive on the Sustainable Use of Pesticides aims to reduce pesticide use by 50% by 2030. This could impact meat production and the allocation of budget to protected areas.\n\n5. **Forest strategy and tree planting**: The Forest Strategy aims to plant 3 billion trees by 2030. This could have implications for land use, biodiversity, and ecosystem restoration, and should be considered in the budget allocation.\n\n6. **Water Framework Directive**: The Water Framework Directive aims to improve water quality and reduce pollution. The budget allocation should consider the impact of meat production on water resources and the need to protect water ecosystems.\n\nBy considering these factors, the high-level institution can make informed decisions about allocating budget between meat production and protected areas, balancing the need to support sustainable agriculture with the need to protect and restore ecosystems.",
+                2076: "Based on the provided context, the relevant and important information to inform the high-level institution's policy-making on allocating budget between meat production and protected areas is:\n\n1. **Biodiversity and ecosystem restoration targets**: The EU Nature Restoration Law proposes to restore at least 20% of the Union's land and sea areas by 2030, and all ecosystems in need of restoration by 2050. This implies that a significant portion of the budget should be allocated to protected areas to achieve these targets.\n\n2. **Agricultural production and environmental impact**: The Action Plan on Organic Farming aims to have at least 25% of the EU's agricultural land under organic farming by 2030. This could lead to a reduction in the environmental impact of meat production. The budget allocation should consider the environmental benefits of organic farming and the potential reduction in pollution and greenhouse gas emissions.\n\n3. **Climate change mitigation**: The Climate Law sets a target of reducing net greenhouse gas emissions by at least 55% by 2030. The budget allocation should prioritize measures that support climate change mitigation, such as sustainable land use, reforestation, and ecosystem restoration.\n\n4. **Pesticide use reduction**: The proposed Directive on the Sustainable Use of Pesticides aims to reduce pesticide use by 50% by 2030. This could impact meat production and the allocation of budget to protected areas.\n\n5. **Forest strategy and tree planting**: The Forest Strategy aims to plant 3 billion trees by 2030. This could have implications for land use, biodiversity, and ecosystem restoration, and should be considered in the budget allocation.\n\n6. **Water Framework Directive**: The Water Framework Directive aims to improve water quality and reduce pollution. The budget allocation should consider the impact of meat production on water resources and the need to protect water ecosystems.\n\nBy considering these factors, the high-level institution can make informed decisions about allocating budget between meat production and protected areas, balancing the need to support sustainable agriculture with the need to protect and restore ecosystems."
+            },
+            high_level:{
+                2026: 'High-level Institution: As a high-ranking policymaker, I will provide a step-by-step reasoning for my decisions, analyzing inputs from all stakeholders and reflecting on historical information to inform my decisions.\n\n**Stakeholder Input Analysis**\n\n1. Agricultural Institution: The input highlights the need for more effective policies to achieve the meat production goal, a decreasing budget surplus, and a gap between the policy goal and actual production. I will consider increasing the budget allocation for meat production and implementing targeted initiatives to increase actual meat production.\n2. Environmental Institution: The input emphasizes the need for increased priorities and financial support for protected areas, with a significant gap between the policy goal and actual protected area ratio. I will consider increasing the budget allocation for protected area establishment and expansion.\n3. Environmental NGO: The input urges prioritizing nature conservation, recognizing the critical role it plays in achieving Net-zero targets. I will consider increasing budget allocations for nature conservation and sustainable agriculture practices.\n4. Land User Association: The input prioritizes meat industry development, highlighting the need for sustainable development, investment in infrastructure and research, and alignment with policy goals. I will consider the importance of supporting the meat industry while promoting sustainable practices.\n\n**Budget Allocation Analysis**\n\nBased on the stakeholder inputs, I will allocate the budget as follows:\n\n* Agricultural Institution: 40% (increased from previous allocation to address the gap between policy goal and actual meat production)\n* Environmental Institution: 60% (increased from previous allocation to prioritize nature conservation and protected area establishment and expansion)\n\n**Policy Goal Adjustment Analysis**\n\nBased on the stakeholder inputs, I will adjust the policy goals as follows:\n\n* Agricultural Institution: +10% (increase in policy goal to address the gap between policy goal and actual meat production)\n* Environmental Institution: +20% (increase in policy goal to prioritize nature conservation and protected area establishment and expansion)\n\n**Quantified Policy Adjustments**\n\n{\n\"Budget Allocation\": {\n\"Agricultural Institution\": 40,\n\"Environmental Institution\": 60\n},\n\"Policy Goal\": {\n\"Agricultural Institution\": 10,\n\"Environmental Institution\": 20\n}\n}\n\nThis allocation and policy goal adjustment will support the achievement of the long-term goals, balancing the interests of diverse stakeholders and ensuring the feasibility of policy adjustments.',
+                2036:'High-level Institution: As a high-ranking policymaker, I will provide a step-by-step reasoning for my decisions, analyzing inputs from all stakeholders and reflecting on historical information to inform my decisions.\n\n**Stakeholder Input Analysis**\n\n1. Agricultural Institution: The institution proposes increasing the budget allocation to support the meat production sector, setting realistic policy goals aligned with current production capacity, and implementing initiatives to improve productivity and efficiency.\n2. Environmental Institution: The institution proposes increasing the policy goal of protected area ratio to at least 15% by 2025 and 20% by 2030, allocating a minimum of 50% of the average budget surplus for protected area establishment, and developing a comprehensive plan for habitat restoration, species conservation, and community engagement.\n3. Environmental NGO: The NGO emphasizes the urgent need for nature conservation, highlighting the gap between meat demand and supply, and the importance of sustainable land-use planning and conservation of natural habitats. They recommend increasing the protected area ratio, implementing sustainable land-use practices, and prioritizing nature conservation.\n4. Land User Association: The association prioritizes meat industry development, emphasizing economic growth, job creation, and food security. They recommend increasing investment in the meat industry, promoting sustainable practices, and optimizing budget allocations.\n5. Research Suppliers: The suppliers provide initial data insights, highlighting the gap between meat demand and supply, the increasing protected area ratio, and correlations between meat demand, meat supply, and protected area ratio.\n6. Law Consultant: The consultant emphasizes the importance of considering biodiversity and ecosystem restoration targets, agricultural production and environmental impact, climate change mitigation, and land-use planning and management.\n\n**Budget Allocation Analysis**\n\nBased on the stakeholder inputs, I will allocate the budget as follows:\n\n* Agricultural Institution: 40% of the budget (increased from previous allocation to support meat production sector growth and sustainable practices)\n* Environmental Institution: 60% of the budget (increased to support protected area establishment, habitat restoration, species conservation, and community engagement)\n\n**Policy Goal Adjustment Analysis**\n\nBased on the stakeholder inputs, I will adjust the policy goals as follows:\n\n* Agricultural Institution: Increase the policy goal by 10% to support sustainable meat production practices and improve productivity and efficiency.\n* Environmental Institution: Increase the policy goal by 20% to achieve the protected area ratio target of at least 15% by 2025 and 20% by 2030.\n\n**Quantified Policy Adjustments**\n\n{\n\"Budget Allocation\": {\n\"Agricultural Institution\": 40,\n\"Environmental Institution\": 60\n},\n\"Policy Goal\": {\n\"Agricultural Institution\": 10,\n\"Environmental Institution\": 20\n}\n}',
+                2046:'High-level Institution: As a high-ranking policymaker, I will provide a step-by-step rationale for my decisions, ensuring that they are logical, well-reasoned, and transparent.\n\n**Stakeholder Input Analysis**\n\nAfter analyzing the inputs from various stakeholders, I have identified the following key points:\n\n1. The Agricultural Institution emphasizes the need for increased financial support to meet the policy goal of meat production, citing a budget surplus deficit and a strong positive correlation between the policy goal and actual meat production.\n2. The Environmental Institution proposes increasing the policy goal of protected area ratio to 0.15 and allocating a minimum of 20% of the budget surplus towards protected areas to support expansion and achieve the policy goal.\n3. The Environmental NGO highlights the urgent need for sustainable meat production practices, emphasizing the interconnectedness of meat production, conservation, and environmental protection.\n4. The Land User Association prioritizes meat industry development to address the growing demand for meat and bridge the gap between supply and demand.\n5. The Research Suppliers provide data analysis, highlighting the gap between meat demand and supply, the discrepancy between policy goals and actual outcomes, and the correlations between meat demand, meat supply, and protected area ratio.\n\n**Budget Allocation Analysis**\n\nBased on the stakeholder inputs, I will allocate the budget as follows:\n\n* Agricultural Institution: 40% of the budget (increased from the current allocation to support meat production and address the budget surplus deficit)\n* Environmental Institution: 30% of the budget (increased from the current allocation to support the expansion of protected areas and achieve the policy goal)\n* Remaining 30% will be allocated to other initiatives and programs\n\n**Policy Goal Adjustment Analysis**\n\nAfter analyzing the stakeholder inputs, I will adjust the policy goals as follows:\n\n* Agricultural Institution: Increase the policy goal of meat production by 10% to address the growing demand and bridge the gap between supply and demand.\n* Environmental Institution: Increase the policy goal of protected area ratio to 0.15, as proposed by the Environmental Institution, to align with the Net-zero targets and address biodiversity loss.\n\n**Quantified Policy Adjustments**\n\n{\n  \"Budget Allocation\": {\n    \"Agricultural Institution\": 40,\n    \"Environmental Institution\": 30\n  },\n  \"Policy Goal\": {\n    \"Agricultural Institution\": 10,\n    \"Environmental Institution\": 15\n  }\n}\n\nThis output reflects the budget allocation and policy goal adjustments, ensuring a balanced approach to support sustainable meat production, protected areas expansion, and environmental protection.',
+                2056:'High-level Institution: As a high-ranking policymaker, my role is to oversee operational institutions within the land system, balancing the interests of diverse stakeholders. I will analyze the inputs from various stakeholders to make informed decisions on budget allocation and policy goal adjustments.\n\n**Stakeholder Input Analysis:**\n\n1. Agricultural Institution: The input highlights the need for a review of the policy goal for meat production, increased investment in the sector, and a budget surplus deficit. I acknowledge the importance of supporting the meat production sector while considering environmental concerns.\n2. Environmental Institution: The input emphasizes the need for increased budget allocation to support protected area establishment and expansion, prioritizing environmental protection, and achieving Net-zero targets.\n3. Environmental NGO: The input stresses the urgent need for nature conservation, highlighting the environmental impact of meat production, and advocating for sustainable agriculture practices, increased budget allocation for protected areas, and strengthened policy goals for protected area ratios.\n4. Land User Association: The input emphasizes the importance of prioritizing meat industry development, highlighting its contribution to the national economy, job creation, and food security, while supporting sustainable and responsible practices.\n5. Research Suppliers: The input provides an overview of the numerical features, time-series graphs, and correlation matrix, informing policy decisions related to meat production and protected areas.\n6. Law Consultant: The input highlights the relevance of EU laws and targets, such as biodiversity and ecosystem restoration, agricultural production, climate change mitigation, pesticide use reduction, forest strategy, and water framework directive, to inform policy decisions.\n\n**Budget Allocation Analysis:**\n\nConsidering the inputs, I will allocate the budget as follows:\n\n* Agricultural Institution: 40% of the total budget (increased from the current allocation to support the meat production sector and address the budget surplus deficit)\n* Environmental Institution: 60% of the total budget (increased to prioritize environmental protection, protected area establishment, and expansion, and achieve Net-zero targets)\n\n**Policy Goal Adjustment Analysis:**\n\nBased on the inputs, I will adjust the policy goals as follows:\n\n* Agricultural Institution: Increase the policy goal for meat production by 10% to align with current market demands and production capabilities, while considering environmental concerns.\n* Environmental Institution: Increase the policy goal for protected area ratio by 15% annually to prioritize environmental protection and achieve Net-zero targets.\n\n**Quantified Policy Adjustments:**\n\n{\n\"Budget Allocation\": {\n\"Agricultural Institution\": 40,\n\"Environmental Institution\": 60\n},\n\"Policy Goal\": {\n\"Agricultural Institution\": 10,\n\"Environmental Institution\": 15\n}\n}',
+                2066:'High-level Institution: As a high-ranking policymaker, I will provide a step-by-step rationale for my decisions, ensuring that they are logical, well-reasoned, and transparent.\n\n**Stakeholder Input Analysis**\n\nAfter analyzing the inputs from various stakeholders, I have identified the following key points:\n\n1. The Agricultural Institution is facing a deficit due to unrealistic policy goals, and they propose increasing the budget allocation to support meat production.\n2. The Environmental Institution highlights the significant gap between the policy goal and the current state of protected areas, and they propose a significant increase in budget allocation for protected area establishment.\n3. The Environmental NGO emphasizes the urgent need for nature conservation, highlighting its economic benefits, climate change mitigation, and human health benefits.\n4. The Land User Association (meat production industry) emphasizes the economic benefits, food security, rural development, innovation, and sustainability of the meat industry.\n\n**Budget Allocation Analysis**\n\nConsidering the inputs from stakeholders, I will allocate the budget as follows:\n\n* Agricultural Institution: 40% of the total budget (increased from the current allocation to support meat production and address the deficit)\n* Environmental Institution: 60% of the total budget (increased to prioritize nature conservation, protected area establishment, and ecosystem restoration)\n\n**Policy Goal Adjustment Analysis**\n\nBased on the stakeholder inputs, I will adjust the policy goals as follows:\n\n* Agricultural Institution: Increase the policy goal for meat production by 10% to align with the increased budget allocation and support the industry growth.\n* Environmental Institution: Increase the policy goal for protected area ratio by 20% to bridge the gap between the current state and the desired goal, and to prioritize nature conservation.\n\n**Quantified Policy Adjustments**\n\n{\n  \"Budget Allocation\": {\n    \"Agricultural Institution\": 40,\n    \"Environmental Institution\": 60\n  },\n  \"Policy Goal\": {\n    \"Agricultural Institution\": 10,\n    \"Environmental Institution\": 20\n  }\n}\n\nThis output reflects the step-by-step reasoning and quantified policy adjustments, ensuring a balanced approach to support both the meat production industry and nature conservation.',
+				2076:'High-level Institution: As a high-ranking policymaker, my role is to balance the interests of diverse stakeholders and make informed decisions to allocate budget and adjust policy goals for the Agricultural and Environmental Institutions.\n\n**Stakeholder Input Analysis**\n\n1. Agricultural Institution: The input highlights the need for increased investment in the meat production sector to address the gap between the policy goal and actual production. The negative budget surplus indicates a deficit that needs to be addressed.\n2. Environmental Institution: The input emphasizes the need for increased priorities and financial support for protected area establishment to achieve the desired Net-zero targets.\n3. Environmental NGO: The input urges the institution to prioritize nature conservation, rebalance the budget to support protected areas, and align policy goals with environmental sustainability.\n4. Land User Association: The input prioritizes meat industry development for food security, economic growth, and sustainable development.\n5. Research Suppliers: The input provides insights into the correlations between meat demand, supply, and policy goal, as well as between the protected area ratio and policy goal.\n\n**Budget Allocation Analysis**\n\nBased on the stakeholder inputs, I will allocate the budget as follows:\n\n* Agricultural Institution: 55% (increased allocation to address the budget deficit and support meat production)\n* Environmental Institution: 45% (increased allocation to prioritize protected area establishment and nature conservation)\n\n**Policy Goal Adjustment Analysis**\n\nBased on the stakeholder inputs, I will adjust the policy goals as follows:\n\n* Agricultural Institution: +10% (increase in policy goal to address the gap between demand and supply)\n* Environmental Institution: +20% (increase in policy goal to prioritize protected area establishment and achieve Net-zero targets)\n\n**Quantified Policy Adjustments**\n\n{\n\"Budget Allocation\": {\n\"Agricultural Institution\": 55,\n\"Environmental Institution\": 45\n},\n\"Policy Goal\": {\n\"Agricultural Institution\": 10,\n\"Environmental Institution\": 20\n}\n}'
+            },
+            hlevenInstitution: {
+                2026: '{"Budget Allocation": {"Agricultural Institution": 40, "Environmental Institution": 60}, "Policy Goal": {"Agricultural Institution": 10, "Environmental Institution": 20}}',
+                2036: '{"Budget Allocation": {"Agricultural Institution": 40, "Environmental Institution": 60}, "Policy Goal": {"Agricultural Institution": 10, "Environmental Institution": 20}}',
+                2046: '{"Budget Allocation": {"Agricultural Institution": 40, "Environmental Institution": 30}, "Policy Goal": {"Agricultural Institution": 10, "Environmental Institution": 15}}',
+                2056: '{"Budget Allocation": {"Agricultural Institution": 40, "Environmental Institution": 60}, "Policy Goal": {"Agricultural Institution": 10, "Environmental Institution": 15}}',
+                2066: '{"Budget Allocation": {"Agricultural Institution": 40, "Environmental Institution": 60}, "Policy Goal": {"Agricultural Institution": 10, "Environmental Institution": 20}}',
+                2076: '{"Budget Allocation": {"Agricultural Institution": 55, "Environmental Institution": 45}, "Policy Goal": {"Agricultural Institution": 10, "Environmental Institution": 20}}'
+            }
+        };
+
+        // Parse the High-Level Institution JSON outputs
+        const parsedHighLevelOutputs = {};
+        timePoints.forEach(year => {
+            try {
+                parsedHighLevelOutputs[year] = JSON.parse(roleOutputs.hlevenInstitution[year]);
+            } catch (e) {
+                parsedHighLevelOutputs[year] = { error: "Could not parse JSON" };
+            }
+        });
+
+        // Helper components for tab functionality
+        const TabContext = React.createContext(null);
+
+        const Tabs = ({ children, defaultValue }) => {
+            const [value, setValue] = useState(defaultValue);
+            return (
+                <TabContext.Provider value={{ value, setValue }}>
+                    {children}
+                </TabContext.Provider>
+            );
+        };
+
+        const TabsList = ({ children, className }) => {
+            return (
+                <div className={`grid grid-cols-8 mb-4 ${className}`}>
+                    {children}
+                </div>
+            );
+        };
+
+        const TabsTrigger = ({ children, value, className }) => {
+            const { value: selectedValue, setValue } = React.useContext(TabContext);
+            return (
+                <button 
+                    className={`px-3 py-2 text-sm ${selectedValue === value ? 'bg-gray-200 font-medium' : 'bg-gray-100'} rounded-md ${className}`}
+                    onClick={() => setValue(value)}
+                >
+                    {children}
+                </button>
+            );
+        };
+
+        const TabsContent = ({ children, value }) => {
+            const { value: selectedValue } = React.useContext(TabContext);
+            if (selectedValue !== value) return null;
+            return <div>{children}</div>;
+        };
+
+        // Card components
+        const Card = ({ children, className }) => {
+            return <div className={`bg-white rounded-lg shadow ${className}`}>{children}</div>;
+        };
+
+        const CardHeader = ({ children, className, onClick }) => {
+            return <div onClick={onClick} className={`p-4 border-b ${className}`}>{children}</div>;
+        };
+
+        const CardTitle = ({ children, className }) => {
+            return <h3 className={`font-bold ${className}`}>{children}</h3>;
+        };
+
+        const CardContent = ({ children, className }) => {
+            return <div className={`p-4 ${className}`}>{children}</div>;
+        };
+
+        // Icon components
+        const ChevronUp = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m18 15-6-6-6 6"/>
+            </svg>
+        );
+
+        const ChevronDown = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m6 9 6 6 6-6"/>
+            </svg>
+        );
+
+        const Check = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500">
+                <path d="M20 6 9 17l-5-5"/>
+            </svg>
+        );
+
+        const Timeline = () => {
+            const [selectedTime, setSelectedTime] = useState(timePoints[0]);
+            const [expandedRoles, setExpandedRoles] = useState({});
+            
+            const handleTimeChange = (event) => {
+                const value = parseInt(event.target.value);
+                setSelectedTime(value);
+            };
+            
+            const toggleRoleExpansion = (roleId) => {
+                setExpandedRoles({
+                    ...expandedRoles,
+                    [roleId]: !expandedRoles[roleId]
+                });
+            };
+            
+            // Function to display the budget allocation visually
+            const BudgetAllocation = ({ year }) => {
+                const budget = parsedHighLevelOutputs[year]?.["Budget Allocation"];
+                if (!budget) return <div>No budget data available</div>;
+                
+                const agriPercent = budget["Agricultural Institution"];
+                const enviPercent = budget["Environmental Institution"];
+                
+                return (
+                    <div className="mt-2">
+                        <div className="text-sm font-medium mb-1">Budget Allocation</div>
+                        <div className="flex items-center">
+                            <div 
+                                className="bg-amber-500 h-6 rounded-l-md flex items-center justify-center text-white text-xs font-bold" 
+                                style={{ width: `${agriPercent}%` }}
+                            >
+                                {agriPercent}%
+                            </div>
+                            <div 
+                                className="bg-emerald-500 h-6 rounded-r-md flex items-center justify-center text-white text-xs font-bold" 
+                                style={{ width: `${enviPercent}%` }}
+                            >
+                                {enviPercent}%
+                            </div>
+                        </div>
+                        <div className="flex justify-between text-xs mt-1">
+                            <div>Agricultural</div>
+                            <div>Environmental</div>
+                        </div>
+                    </div>
+                );
+            };
+            
+            // Function to display the policy goals visually
+            const PolicyGoals = ({ year }) => {
+                const policy = parsedHighLevelOutputs[year]?.["Policy Goal"];
+                if (!policy) return <div>No policy data available</div>;
+                
+                return (
+                    <div className="mt-4">
+                        <div className="text-sm font-medium mb-1">Policy Goals</div>
+                        <div className="flex gap-4">
+                            <div className="flex-1">
+                                <div className="text-xs mb-1">Agricultural: {policy["Agricultural Institution"]}</div>
+                                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div 
+                                        className="bg-amber-500 h-2.5 rounded-full" 
+                                        style={{ width: `${policy["Agricultural Institution"] * 5}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                            <div className="flex-1">
+                                <div className="text-xs mb-1">Environmental: {policy["Environmental Institution"]}</div>
+                                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div 
+                                        className="bg-emerald-500 h-2.5 rounded-full" 
+                                        style={{ width: `${policy["Environmental Institution"] * 5}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+            
+            // Button component
+            const Button = ({ children, onClick, disabled, variant }) => {
+                const baseClasses = "px-4 py-2 rounded-md font-medium";
+                const variantClasses = variant === "outline" 
+                    ? "border border-gray-300 text-gray-700 hover:bg-gray-50" 
+                    : "bg-blue-600 text-white hover:bg-blue-700";
+                const disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer";
+                
+                return (
+                    <button 
+                        className={`${baseClasses} ${variantClasses} ${disabledClasses}`}
+                        onClick={disabled ? null : onClick}
+                        disabled={disabled}
+                    >
+                        {children}
+                    </button>
+                );
+            };
+            
+            return (
+                <div className="w-full max-w-4xl">
+                    <h2 className="text-2xl font-bold mb-4">Timeline: Stakeholder Perspectives (2026-2076)</h2>
+                    
+                    <div className="mb-6">
+                        <div className="flex justify-between mb-2">
+                            {timePoints.map(year => (
+                                <span 
+                                    key={year} 
+                                    className={`text-sm ${selectedTime === year ? 'font-bold text-blue-600' : 'text-gray-500'}`}
+                                >
+                                    {year}
+                                </span>
+                            ))}
+                        </div>
+                        <input 
+                            type="range" 
+                            min={timePoints[0]} 
+                            max={timePoints[timePoints.length - 1]} 
+                            step={10}
+                            value={selectedTime}
+                            onChange={handleTimeChange}
+                            className="slider w-full mb-6"
+                        />
+                        
+                        <div className="flex justify-between gap-2 mb-6">
+                            <Button 
+                                variant="outline" 
+                                onClick={() => {
+                                    const currentIndex = timePoints.indexOf(selectedTime);
+                                    if (currentIndex > 0) {
+                                        setSelectedTime(timePoints[currentIndex - 1]);
+                                    }
+                                }}
+                                disabled={selectedTime === timePoints[0]}
+                            >
+                                Previous Decade
+                            </Button>
+                            
+                            <Button 
+                                variant="outline" 
+                                onClick={() => {
+                                    const currentIndex = timePoints.indexOf(selectedTime);
+                                    if (currentIndex < timePoints.length - 1) {
+                                        setSelectedTime(timePoints[currentIndex + 1]);
+                                    }
+                                }}
+                                disabled={selectedTime === timePoints[timePoints.length - 1]}
+                            >
+                                Next Decade
+                            </Button>
+                        </div>
+                        
+                        {/* High Level Institution Decision Card */}
+                        <Card className="mb-6 border-2 border-gray-400">
+                            <CardHeader className="pb-2">
+                                <CardTitle>High-Level Institution Decision ({selectedTime})</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <BudgetAllocation year={selectedTime} />
+                                <PolicyGoals year={selectedTime} />
+                            </CardContent>
+                        </Card>
+                    </div>
+                    
+                    <Tabs defaultValue="all" className="w-full">
+                        <TabsList className="grid grid-cols-8 mb-4">
+                            <TabsTrigger value="all">All</TabsTrigger>
+                            {roles.filter(r => r.id !== 'hlevenInstitution').map(role => (
+                                <TabsTrigger key={role.id} value={role.id} className="text-xs">
+                                    {role.name}
+                                </TabsTrigger>
+                            ))}
+                        </TabsList>
+                        
+                        <TabsContent value="all" className="space-y-4">
+                            {roles.filter(r => r.id !== 'hlevenInstitution').map(role => (
+                                <Card 
+                                    key={role.id} 
+                                    className={`${role.color} border overflow-hidden`}
+                                >
+                                    <CardHeader className="pb-2 cursor-pointer" onClick={() => toggleRoleExpansion(role.id)}>
+                                        <div className="flex justify-between items-center">
+                                            <CardTitle className="text-base">{role.name}</CardTitle>
+                                            {expandedRoles[role.id] ? <ChevronUp /> : <ChevronDown />}
+                                        </div>
+                                        <p className="text-xs text-gray-500">{role.description}</p>
+                                    </CardHeader>
+                                    
+                                    {expandedRoles[role.id] && (
+                                        <CardContent>
+                                            <div className="text-sm whitespace-pre-wrap">
+                                                {roleOutputs[role.id][selectedTime]}
+                                            </div>
+                                        </CardContent>
+                                    )}
+                                </Card>
+                            ))}
+                        </TabsContent>
+                        
+                        {roles.filter(r => r.id !== 'hlevenInstitution').map(role => (
+                            <TabsContent key={role.id} value={role.id}>
+                                <Card className={`${role.color} border`}>
+                                    <CardHeader>
+                                        <CardTitle>{role.name} ({selectedTime})</CardTitle>
+                                        <p className="text-sm text-gray-500">{role.description}</p>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-sm whitespace-pre-wrap">
+                                            {roleOutputs[role.id][selectedTime]}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                                
+                                <div className="mt-6">
+                                    <h3 className="font-medium mb-3">Evolution Over Time</h3>
+                                    {timePoints.map(year => (
+                                        <Card 
+                                            key={year} 
+                                            className={`mb-3 border ${year === selectedTime ? 'border-blue-500 border-2' : ''}`}
+                                        >
+                                            <CardHeader className="py-2 px-4">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="font-medium">{year}</span>
+                                                    {year === selectedTime && <Check />}
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent className="py-2 px-4">
+                                                <div className="text-sm line-clamp-2">
+                                                    {roleOutputs[role.id][year]}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
+                            </TabsContent>
+                        ))}
+                    </Tabs>
+                </div>
+            );
+        };
+
+        // Main app component
+        const App = () => {
+            return (
+                <div className="container mx-auto py-8">
+                    <Timeline />
+                </div>
+            );
+        };
+
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
